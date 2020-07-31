@@ -67,10 +67,17 @@ def _german_lemmatizer():
     """Returns a german dictionary with normalized words."""
 
     dict_ = {
-        # A
+        # - A -
+        'anlagen':                  'anlage',
+
+        # - F -
+        'forderungen':              'forderung',
 
         # - K -
         'kunden':                   'kunde',
+
+        # - L -
+        'leistungen':               'leistung',
         
         # - M -
         'mitarbeitend':             'mitarbeiter/in',
@@ -79,6 +86,9 @@ def _german_lemmatizer():
 
         'mitarbeiterin':            'mitarbeiter/in',
         'mitarbeiterinnen':         'mitarbeiter/in',
+
+        # - U -
+        'übrigen':                  'übrige',
 
     }
 

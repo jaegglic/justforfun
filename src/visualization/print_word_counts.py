@@ -16,6 +16,7 @@
 
 # Standard library
 from collections import Counter
+import re
 # Third party requirements
 # Local imports
 from src._paths import PATH_DATA_RAW
@@ -23,43 +24,77 @@ import src.utils as utl
 
 # Constants
 _PDF_FILENAMES = [
-    # 'Mobiliar_GB_2010',
-    # 'Mobiliar_GB_2011',
-    # 'Mobiliar_GB_2012',
-    # 'Mobiliar_GB_2013',
-    # 'Mobiliar_GB_2014',
-    # 'Mobiliar_GB_2015',
-    # 'Mobiliar_GB_2016',
-    # 'Mobiliar_GB_2017',
-    # 'Mobiliar_GB_2018',
-    'Mobiliar_GB_2019',
+    # 'MainCompany_2010',
+    # 'MainCompany_2011',
+    # 'MainCompany_2012',
+    # 'MainCompany_2013',
+    # 'MainCompany_2014',
+    # 'MainCompany_2015',
+    # 'MainCompany_2016',
+    # 'MainCompany_2017',
+    # 'MainCompany_2018',
+    'MainCompany_2019',
 
-    # 'InselGruppe_KR_2019',
+    'SideCompany_A_2019',
+
+    'SideCompany_B_2019',
 ]
 
 if __name__ == '__main__':
-    nmost = 20
 
-    reports = []
+    # Keywords of interest
+    patterns_of_interest = ['mitarbeite', 'kunde']
+
+    # Normalization settings
+    stemmer = 'spacy'        # None, 'nltk', 'spacy', or 'personal'
+
+    # How many of the most appearing words to show
+    nmost = 10
+
+    # Print space settings
+    space_indent = 4
+    space_words = 50
+    space_count = 15
+    space_countword = 15
+
+    # Generate and print the pdf statistics
     for filename in _PDF_FILENAMES:
         # Read the pdf
         report = utl.read_pdf(PATH_DATA_RAW, filename)
-
         text = report['text']
-        tokens = text.split()
 
-        # Counter
-        nword = 50
-        ncount = 15
-        ncountword = 15
+        # Normalize text
+        text = utl.normalize_text(text, stemmer=stemmer)
+
+        # Count the appearances of each (normalized) word
+        tokens = text.split()
         counter = Counter(tokens).most_common()
-        print(f'\nReport {filename}')
-        print(f'    {"Word":{nword}}{"Count":{ncount}}{"Count/Word":<{ncountword}}')
+
+        # Print the Title
+        hline = '-' * (space_indent+space_words+space_count+space_countword)
+        print('\n' + hline)
+        print(f'File {filename}')
+        print('')
+
+        # Print the patterns of interest
+        for pat in patterns_of_interest:
+            sum = 0
+            print(f"{' '*space_indent}Pattern r'{pat}'")
+            pat = re.compile(pat)
+            for i, (word, count) in enumerate(counter):
+                if re.match(pat, word) is not None:
+                    print(f'{" "*space_indent*2}{i+1:4d} {word} ({count}x)')
+                    sum += count
+            spw = sum / len(tokens)
+            print(f'{" "*space_indent}{"SUM":{space_words}}'
+                  f'{sum:<{space_count}}{spw:<{space_countword}.6f}')
+            print('')
+
+        # Print the appearances
+        print(f'{" "*space_indent}{"WORD":{space_words}}'
+              f'{"COUNT":{space_count}}{"COUNT/WORD":<{space_countword}}')
+        print(f'{" "*space_indent}{hline[space_indent:]}')
         for word, count in counter[:nmost]:
             cpw = count/len(tokens)
-            print(f'    {word:{nword}} {count:<{ncount}} {cpw:>{ncountword}.6f}')
-
-
-
-
-
+            print(f'{" "*space_indent}{word:{space_words}}'
+                  f'{count:<{space_count}}{cpw:<{space_countword}.6f}')

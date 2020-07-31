@@ -10,4 +10,5 @@ Just a small project for playing around with packages such as:
 
 and others.
 
-  *"We do what we do and nobody really knows why"*
+Please note that the raw PDF files ar not uploaded. Feel free to put your own
+files into the folder ``data/raw`` and adapt the file names accordingly.

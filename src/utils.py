@@ -21,6 +21,7 @@ from collections import Counter
 # Third party requirements
 import PyPDF2
 import nltk
+import spacy
 # Local imports
 from src._paths import PATH_DATA_RAW
 from src.features._lemmatizer import GermanLemmatizer
@@ -44,6 +45,8 @@ def _german_stop_words():
         'ˆ',
         'ab',
         'ag',
+        'bzw',
+        'e',
         'chf', 'mchf', 'tchf',
         'mio',
         'per',
@@ -63,8 +66,8 @@ def normalize_text(text, stemmer=None):
 
     Args:
         text (str): Text to be normalized
-        stemmer (str {'nltk', 'personal'}, optional): Usage of none, 'nltk' or
-            'personal' stemmer.
+        stemmer (str {None, 'nltk', 'spacy', 'personal'}, optional): Usage of
+            no, 'nltk', 'spacy', or 'personal' stemmer.
 
     Returns:
         str: Normalized string.
@@ -88,10 +91,13 @@ def normalize_text(text, stemmer=None):
     # Stemming the words
     if stemmer == 'nltk':
         german = nltk.snowball.GermanStemmer()
-        words = [german.stem(t) for t in words]
+        words = [german.stem(w) for w in words]
+    elif stemmer == 'spacy':
+        nlp = spacy.load('de_core_news_sm')
+        words = [nlp.tokenizer(w)[0].lemma_ for w in words]
     elif stemmer == 'personal':
         german = GermanLemmatizer()
-        words = [german.lemma(t) for t in words]
+        words = [german.lemma(w) for w in words]
 
     return ' '.join(words)
 
