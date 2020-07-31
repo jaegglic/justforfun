@@ -1,0 +1,6 @@
+# pip freeze > requirements.txt
+
+PyPDF2
+nltk
+spacy
+textblob-de
