@@ -5,10 +5,10 @@
 
 # -------------------------------------------------------------------------
 #   Author(s): Christoph Jaeggli
-#   Institute: Insel Data Science Center, Insel Gruppe AG
+#   Institute: (None)
 #
 #   MIT License
-#   Copyright (c) 2020 Insel Data Science Center
+#   Copyright (c) 2020 Christoph Jaeggli
 #
 #   This program is distributed in the hope that it will be useful, but
 #   WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,13 +17,11 @@
 # Standard library
 import re
 from pathlib import Path
-from collections import Counter
 # Third party requirements
 import PyPDF2
 import nltk
 import spacy
 # Local imports
-from src._paths import PATH_DATA_RAW
 from src.features._lemmatizer import GermanLemmatizer
 
 

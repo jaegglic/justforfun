@@ -5,7 +5,7 @@
 
 # -------------------------------------------------------------------------
 #   Authors: Christoph Jaeggli
-#   Institute: Insel Data Science Center, Insel Gruppe AG
+#   Institute: (None)
 #
 #   MIT License
 #   Copyright (c) 2020 Christoph Jaeggli

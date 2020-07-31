@@ -5,7 +5,7 @@
 
 # -------------------------------------------------------------------------
 #   Author(s): Christoph Jaeggli
-#   Institute: (none)
+#   Institute: (None)
 #
 #   MIT License
 #   Copyright (c) 2020 Christoph Jaeggli
@@ -20,10 +20,11 @@ import re
 # Third party requirements
 # Local imports
 from src._paths import PATH_DATA_RAW
+from src._settings import PATTERNS_OF_INTEREST
 import src.utils as utl
 
 # Constants
-_PDF_FILENAMES = [
+_FILENAMES = [
     # 'MainCompany_2010',
     # 'MainCompany_2011',
     # 'MainCompany_2012',
@@ -35,21 +36,18 @@ _PDF_FILENAMES = [
     # 'MainCompany_2018',
     'MainCompany_2019',
 
-    'SideCompany_A_2019',
+    # 'SideCompany_A_2019',
 
-    'SideCompany_B_2019',
+    # 'SideCompany_B_2019',
 ]
 
 if __name__ == '__main__':
-
-    # Keywords of interest
-    patterns_of_interest = ['mitarbeite', 'kunde']
 
     # Normalization settings
     stemmer = 'spacy'        # None, 'nltk', 'spacy', or 'personal'
 
     # How many of the most appearing words to show
-    nmost = 10
+    nmost = 20
 
     # Print space settings
     space_indent = 4
@@ -58,7 +56,7 @@ if __name__ == '__main__':
     space_countword = 15
 
     # Generate and print the pdf statistics
-    for filename in _PDF_FILENAMES:
+    for filename in _FILENAMES:
         # Read the pdf
         report = utl.read_pdf(PATH_DATA_RAW, filename)
         text = report['text']
@@ -77,12 +75,12 @@ if __name__ == '__main__':
         print('')
 
         # Print the patterns of interest
-        for pat in patterns_of_interest:
+        for pat in PATTERNS_OF_INTEREST:
             sum = 0
             print(f"{' '*space_indent}Pattern r'{pat}'")
-            pat = re.compile(pat)
+            # pat = re.compile(pat)
             for i, (word, count) in enumerate(counter):
-                if re.match(pat, word) is not None:
+                if re.search(pat, word) is not None:
                     print(f'{" "*space_indent*2}{i+1:4d} {word} ({count}x)')
                     sum += count
             spw = sum / len(tokens)
