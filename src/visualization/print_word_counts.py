@@ -48,13 +48,14 @@ _SPACE_COUNT = 15
 _SPACE_COUNTWORD = 15
 
 
-def _get_word_count_from_pdf(path, filename):
+def _get_word_count_from_pdf(path, filename, stemmer=None):
     """Reads a pdf file and returns a counter for all the appearances of all
     words in the text.
 
     Args:
         path (Path): Path to the .pdf file.
         filename (str): File name.
+        stemmer (str, optional): Stemmer for normalizing the text.
 
     Returns:
         list of tuple: Return a count in the form (word, count) in descending
@@ -117,7 +118,7 @@ if __name__ == '__main__':
     # Generate and print the pdf statistics
     for filename in _FILENAMES:
         # Get the word count
-        counter = _get_word_count_from_pdf(PATH_DATA_RAW, filename)
+        counter = _get_word_count_from_pdf(PATH_DATA_RAW, filename, stemmer)
 
         # Print the Title
         hline = '-' * (_SPACE_INDENT + _SPACE_WORDS + _SPACE_COUNT + _SPACE_COUNTWORD)

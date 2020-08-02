@@ -1,0 +1,26 @@
+File MainCompany_2019
+
+    mitarbeite(n|nd|r|rin|rinnen)
+        Polarity     = 0.253
+        Subjectivity = 0.005
+    kunde[n]?
+        Polarity     = 0.264
+        Subjectivity = 0.024
+
+File SideCompany_A_2019
+
+    mitarbeite(n|nd|r|rin|rinnen)
+        Polarity     = 0.192
+        Subjectivity = 0.007
+    kunde[n]?
+        Polarity     = 0.264
+        Subjectivity = 0.055
+		
+File SideCompany_B_2019
+
+    mitarbeite(n|nd|r|rin|rinnen)
+        Polarity     = 0.180
+        Subjectivity = 0.022
+    kunde[n]?
+        Polarity     = 0.264
+        Subjectivity = 0.018

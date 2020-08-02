@@ -20,9 +20,9 @@ from pathlib import Path
 # Third party requirements
 import PyPDF2
 import nltk
+from textblob_de import TextBlobDE
 import spacy
 # Local imports
-from src.features._lemmatizer import GermanLemmatizer
 
 
 def _german_stop_words():
@@ -55,6 +55,57 @@ def _german_stop_words():
     return [sw for sw in stop_words if sw not in keep_words]
 
 
+def compute_pat_mood(pattern, sentences):
+    """Computes the polarity and the subjectivity of each sentence containing
+    the given pattern.
+
+    Args:
+        pattern (str): Regex pattern.
+        sentences (list of str): List of sentences
+
+    Returns:
+        dictz: Dict with fields 'sentences', 'polarity' and 'semtiment' that
+            contains the sentence, a polarity, and a subjectivity measure for
+            each sentence containing the given pattern.
+    """
+    pat = re.compile(pattern)
+    index, polarity, subjectivity =[], [], []
+    for i, sent in enumerate(sentences):
+        if re.search(pat, sent) is not None:
+            blob = TextBlobDE(sent)
+            index.append(i)
+            polarity.append(blob.sentiment.polarity)
+            subjectivity.append(blob.sentiment.subjectivity)
+
+    mood = dict([
+        ('sentences', [sentences[j] for j in index]),
+        ('polarity', polarity),
+        ('subjectivity', subjectivity)
+    ])
+    return mood
+
+
+def get_sentences_from_pdf(path, filename):
+    """Reads a pdf file and returns the list of sentences.
+
+    Args:
+        path (Path): Path to the .pdf file.
+        filename (str): File name.
+
+    Returns:
+        list of str: List of sentences.
+    """
+    # Read the PDF
+    report = read_pdf(path, filename)
+    text = report['text']
+
+    # Split into Normalized Sentences
+    sentences = nltk.tokenize.sent_tokenize(text)
+    sentences = [normalize_text(sent) for sent in sentences]
+
+    return sentences
+
+
 def normalize_text(text, stemmer=None):
     """Minor normalization of a string by using techniques:
         - all lower case
@@ -64,8 +115,8 @@ def normalize_text(text, stemmer=None):
 
     Args:
         text (str): Text to be normalized
-        stemmer (str {None, 'nltk', 'spacy', 'personal'}, optional): Usage of
-            no, 'nltk', 'spacy', or 'personal' stemmer.
+        stemmer (str {None, 'nltk', 'spacy'}, optional): Usage of no, 'nltk',
+            or 'spacy' stemmer.
 
     Returns:
         str: Normalized string.
@@ -93,9 +144,6 @@ def normalize_text(text, stemmer=None):
     elif stemmer == 'spacy':
         nlp = spacy.load('de_core_news_sm')
         words = [nlp.tokenizer(w)[0].lemma_ for w in words]
-    elif stemmer == 'personal':
-        german = GermanLemmatizer()
-        words = [german.lemma(w) for w in words]
 
     return ' '.join(words)
 
@@ -128,7 +176,7 @@ def read_pdf(path, filename):
         text = ''
         for num in range(npages):
             page = reader.getPage(num)
-            text += f'<PageNum{num:03}>{page.extractText()}'
+            text += f'<PageNum{num+1:03}>{page.extractText()}'
 
     # Generate report object with metadata
     document = {
