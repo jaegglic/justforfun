@@ -3,7 +3,7 @@
 """
 
 PATTERNS_OF_INTEREST = [
-    r'mitarbeite(n|nd|r|rin|rinnen)[\w]*',
-    r'kunde[n]?[\w]*',
+    r'mitarbeite(n|nd|r|rin|rinnen)',
+    r'kunde[n]?',
 ]
 

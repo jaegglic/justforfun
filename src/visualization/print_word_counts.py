@@ -41,6 +41,71 @@ _FILENAMES = [
     # 'SideCompany_B_2019',
 ]
 
+# Print space settings
+_SPACE_INDENT = 4
+_SPACE_WORDS = 50
+_SPACE_COUNT = 15
+_SPACE_COUNTWORD = 15
+
+
+def _get_word_count_from_pdf(path, filename):
+    """Reads a pdf file and returns a counter for all the appearances of all
+    words in the text.
+
+    Args:
+        path (Path): Path to the .pdf file.
+        filename (str): File name.
+
+    Returns:
+        list of tuple: Return a count in the form (word, count) in descending
+            order.
+    """
+    # Read the pdf
+    document = utl.read_pdf(path, filename)
+    text = document['text']
+
+    # Normalize text
+    text = utl.normalize_text(text, stemmer=stemmer)
+
+    # Count the appearances of each (normalized) word
+    tokens = text.split()
+    counter = Counter(tokens).most_common()
+
+    return counter
+
+
+def _print_nmost_appearances(nmost, counter):
+    """Prints the `nmost` first words in counter together with the respective
+    count in the from
+        |    Word    |    Count    |   Count/Word    |
+    """
+
+    # Print words and count
+    print(f'{" " * _SPACE_INDENT}{"WORD":{_SPACE_WORDS}}'
+          f'{"COUNT":{_SPACE_COUNT}}{"COUNT/WORD":<{_SPACE_COUNTWORD}}')
+    print(f'{" " * _SPACE_INDENT}{hline[_SPACE_INDENT:]}')
+    for word, count in counter[:nmost]:
+        cpw = count / len(counter)
+        print(f'{" " * _SPACE_INDENT}{word:{_SPACE_WORDS}}'
+              f'{count:<{_SPACE_COUNT}}{cpw:<{_SPACE_COUNTWORD}.6f}')
+
+
+def _print_pattern_of_interest(pat, counter):
+    """Print all matches for a given pattern in the form:
+        |   Place   |   Word    |    (Count)    |
+    where place is the index in `counter`.
+    """
+    sum = 0
+    print(f"{' ' * _SPACE_INDENT}Pattern r'{pat}'")
+    for i, (word, count) in enumerate(counter):
+        if re.search(pat, word) is not None:
+            print(f'{" " * _SPACE_INDENT * 2}{i + 1:4d} {word} ({count}x)')
+            sum += count
+    spw = sum / len(counter)
+    print(f'{" " * _SPACE_INDENT}{"SUM":{_SPACE_WORDS}}'
+          f'{sum:<{_SPACE_COUNT}}{spw:<{_SPACE_COUNTWORD}.6f}')
+
+
 if __name__ == '__main__':
 
     # Normalization settings
@@ -49,50 +114,21 @@ if __name__ == '__main__':
     # How many of the most appearing words to show
     nmost = 20
 
-    # Print space settings
-    space_indent = 4
-    space_words = 50
-    space_count = 15
-    space_countword = 15
-
     # Generate and print the pdf statistics
     for filename in _FILENAMES:
-        # Read the pdf
-        report = utl.read_pdf(PATH_DATA_RAW, filename)
-        text = report['text']
-
-        # Normalize text
-        text = utl.normalize_text(text, stemmer=stemmer)
-
-        # Count the appearances of each (normalized) word
-        tokens = text.split()
-        counter = Counter(tokens).most_common()
+        # Get the word count
+        counter = _get_word_count_from_pdf(PATH_DATA_RAW, filename)
 
         # Print the Title
-        hline = '-' * (space_indent+space_words+space_count+space_countword)
+        hline = '-' * (_SPACE_INDENT + _SPACE_WORDS + _SPACE_COUNT + _SPACE_COUNTWORD)
         print('\n' + hline)
         print(f'File {filename}')
         print('')
 
-        # Print the patterns of interest
+        # Print statistics for all patterns of interest
         for pat in PATTERNS_OF_INTEREST:
-            sum = 0
-            print(f"{' '*space_indent}Pattern r'{pat}'")
-            # pat = re.compile(pat)
-            for i, (word, count) in enumerate(counter):
-                if re.search(pat, word) is not None:
-                    print(f'{" "*space_indent*2}{i+1:4d} {word} ({count}x)')
-                    sum += count
-            spw = sum / len(tokens)
-            print(f'{" "*space_indent}{"SUM":{space_words}}'
-                  f'{sum:<{space_count}}{spw:<{space_countword}.6f}')
+            _print_pattern_of_interest(pat, counter)
             print('')
 
         # Print the appearances
-        print(f'{" "*space_indent}{"WORD":{space_words}}'
-              f'{"COUNT":{space_count}}{"COUNT/WORD":<{space_countword}}')
-        print(f'{" "*space_indent}{hline[space_indent:]}')
-        for word, count in counter[:nmost]:
-            cpw = count/len(tokens)
-            print(f'{" "*space_indent}{word:{space_words}}'
-                  f'{count:<{space_count}}{cpw:<{space_countword}.6f}')
+        _print_nmost_appearances(nmost, counter)
