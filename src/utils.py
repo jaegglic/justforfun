@@ -64,7 +64,7 @@ def compute_pat_mood(pattern, sentences):
         sentences (list of str): List of sentences
 
     Returns:
-        dictz: Dict with fields 'sentences', 'polarity' and 'semtiment' that
+        dict: Dict with fields 'sentences', 'polarity' and 'subjectivity' that
             contains the sentence, a polarity, and a subjectivity measure for
             each sentence containing the given pattern.
     """

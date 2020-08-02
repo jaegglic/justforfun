@@ -62,10 +62,10 @@ if __name__ == '__main__':
             data = json.load(jfile)
 
         # Compute polarity and subjectivities for each pattern
-        data['Mood'] = {}
+        data['Data']['Mood'] = {}
         for pat in PATTERNS_OF_INTEREST:
             mood = utl.compute_pat_mood(pat, sentences)
-            data['Mood'][str(pat)] = mood
+            data['Data']['Mood'][str(pat)] = mood
 
         # Save data set
         file = Path(PATH_DATA_PROCESSED, filename).with_suffix('.json')

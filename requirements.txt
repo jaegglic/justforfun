@@ -4,3 +4,5 @@ PyPDF2
 nltk
 spacy
 textblob-de
+matplotlib
+numpy
