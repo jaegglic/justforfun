@@ -15,10 +15,7 @@
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 # Standard library
-import re
 # Third party requirements
-import nltk
-from textblob_de import TextBlobDE
 # Local imports
 from src._paths import PATH_DATA_RAW
 from src._settings import PATTERNS_OF_INTEREST
@@ -29,6 +26,7 @@ _FILENAME = 'MainCompany_2019'
 
 # _FILENAME = 'SideCompany_A_2019'
 # _FILENAME = 'SideCompany_B_2019'
+# _FILENAME = 'SideCompany_Y_2019'
 
 
 def _print_pol_and_subj(pat, sentences, indent=4, dec=3):

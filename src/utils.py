@@ -17,11 +17,15 @@
 # Standard library
 import re
 from pathlib import Path
+import json
 # Third party requirements
 import PyPDF2
 import nltk
 from textblob_de import TextBlobDE
 import spacy
+import pandas as pd
+import numpy as np
+from sklearn import preprocessing
 # Local imports
 
 
@@ -69,7 +73,7 @@ def compute_pat_mood(pattern, sentences):
             each sentence containing the given pattern.
     """
     pat = re.compile(pattern)
-    index, polarity, subjectivity =[], [], []
+    index, polarity, subjectivity = [], [], []
     for i, sent in enumerate(sentences):
         if re.search(pat, sent) is not None:
             blob = TextBlobDE(sent)
@@ -78,9 +82,9 @@ def compute_pat_mood(pattern, sentences):
             subjectivity.append(blob.sentiment.subjectivity)
 
     mood = dict([
-        ('sentences', [sentences[j] for j in index]),
-        ('polarity', polarity),
-        ('subjectivity', subjectivity)
+        ('Sentences', [sentences[j] for j in index]),
+        ('Polarity', polarity),
+        ('Subjectivity', subjectivity)
     ])
     return mood
 
@@ -104,6 +108,94 @@ def get_sentences_from_pdf(path, filename):
     sentences = [normalize_text(sent) for sent in sentences]
 
     return sentences
+
+
+def get_shifted_columns(df, nmax):
+    """Shifts all the columns up to nmax locations.
+
+    Notes:
+        If `nmax` is 2 and the data frame is given by
+
+                col_a   col_b
+            0     10     2.0
+            1     11     2.1
+            2     12     2.2
+            3     13     2.3
+
+        then the resulting data frame is given by
+
+                col_a   col_b  col_a-1 col_b-1 col_a-2 col_b-2
+            0     10     2.0     NaN     NaN     NaN     NaN
+            1     11     2.1     10      2.0     NaN     NaN
+            2     12     2.2     11      2.1     10      2.0
+            3     13     2.3     12      2.2     11      2.1
+
+    Args:
+        df (DataFrame): Data
+        nshift (int): Maximal number of shifts.
+
+    Returns:
+        DataFrame: Data with the shifted columns
+    """
+    columns = df.columns
+    for i in range(nmax):
+        k = i+1
+        for col in columns:
+            col_new = f'{col}-{k}'
+            shifted = pd.DataFrame(
+                data=np.array(df[col].iloc[:-k]),
+                index=df.index[k:],
+                columns=[col_new],
+            )
+            df = pd.concat([df, shifted], axis=1, ignore_index=False)
+
+    return df
+
+
+def load_data(files, patterns, normalized=False):
+    """Reads a set of .json files and generates a time series.
+
+    The output DataFrame has the columns:
+        - 'Year':           Year of the data row
+        - 'Profit':         Time series of profit
+        - pat_0:            Time series of pattern 0
+        - pat_1:            Time series of pattern 1
+        - ...
+        - pat_n:            Time series of pattern n
+
+        Args:
+            files (iterator of Path objects): .json file names.
+            patterns (list of str): Patterns to consider.
+            normalized (bool): Normalize data sets for columns `pat_i`
+
+        Returns:
+            DataFrame: Time series.
+        """
+    data = []
+    columns = ['Year', 'Profit'] + [p for p in patterns]
+
+    for file in files:
+        # Load content of data file
+        with open(str(file), 'r') as jfile:
+            content = json.load(jfile)
+
+        # Read year and profit
+        new_row = [int(content['Metadata']['Year']), content['Data']['Profit']]
+
+        # Compute polarities for all patterns
+        for pat in patterns:
+            mood = content['Data']['Mood'][pat]
+            mean_polarity = sum(mood['Polarity']) / len(mood['Polarity'])
+            new_row.append(mean_polarity)
+
+        # Append new row
+        data.append(new_row)
+    data = np.array(data)
+
+    if normalized:
+        data[:, 2:] = preprocessing.normalize(data[:, 2:], norm='l1', axis=0)
+
+    return pd.DataFrame(data=data, columns=columns)
 
 
 def normalize_text(text, stemmer=None):

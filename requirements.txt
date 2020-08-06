@@ -6,3 +6,6 @@ spacy
 textblob-de
 matplotlib
 numpy
+pandas
+sklearn
+statsmodels

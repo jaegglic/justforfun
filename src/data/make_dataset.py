@@ -50,14 +50,14 @@ if __name__ == '__main__':
         # Check if they are referring to the corresponding file
         filename = pdf_file.parts[-1].split('.')[0]
         if filename != json_file.parts[-1].split('.')[0]:
-            raise ValueError(f'{pdf_file.parts[-1]} and {json_file.parts[-1]} do '
-                             f'not refer to corresponding files.')
+            raise ValueError(f'{pdf_file.parts[-1]} and {json_file.parts[-1]} '
+                             f'do not refer to corresponding files.')
         print(f'Generate data set {filename}...', end='')
 
         # Get a list of sentences from the pdf
         sentences = utl.get_sentences_from_pdf(PATH_DATA_RAW, filename)
 
-        # Get aditional data from .json file
+        # Get additional data from .json file
         with open(str(json_file), 'r') as jfile:
             data = json.load(jfile)
 
