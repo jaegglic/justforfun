@@ -2,11 +2,21 @@
 """Definition of common settings.
 """
 
+# Random seed
+SEED = 25654
+
 # Patterns for the nltk analysis
 PATTERNS_OF_INTEREST = [
     r'mitarbeite(n|nd|r|rin|rinnen)',
     r'kunde[n]?',
 ]
+DF_COL_YEAR = 'Year'
+DF_COL_PROFIT = 'Profit'
+DF_COL_COUNT = 'Count_'
+DF_COL_POL = 'Polarity_'
+
+# Normalizing profit
+PROFIT_NORM = 1000000
 
 # Color definitions
 CLR_BUSINESS_00 =       '#677078'    # Grey

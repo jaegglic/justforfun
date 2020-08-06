@@ -18,33 +18,17 @@
 from pathlib import Path
 # Third party requirements
 import numpy as np
-from sklearn.model_selection import KFold
 from sklearn.neighbors import KNeighborsRegressor
-from sklearn.svm import SVC, LinearSVC
 from sklearn.tree import DecisionTreeRegressor
-from sklearn.naive_bayes import MultinomialNB
-from sklearn.linear_model import LogisticRegression, SGDClassifier, Perceptron
-from sklearn.neural_network import MLPClassifier
-from sklearn.metrics import accuracy_score, classification_report
+from sklearn.neural_network import MLPRegressor
 # Local imports
 from src._paths import PATH_DATA_PROCESSED
-from src._settings import PATTERNS_OF_INTEREST
+from src._settings import PATTERNS_OF_INTEREST, SEED
 import src.utils as utl
 
 # Constants
 _NPAST = 3
 _NKFOLD = 5
-
-# Classifiers to be tested and compared
-# CLF = KNeighborsRegressor()
-# CLF = SVC()
-# CLF = LinearSVC()
-CLF = DecisionTreeRegressor()
-# CLF = MultinomialNB()
-# CLF = LogisticRegression()
-# CLF = SGDClassifier()
-# CLF = Perceptron()
-# CLF = MLPClassifier()
 
 
 def predict_next_years_profit(df, clf, npast):
@@ -61,7 +45,8 @@ def predict_next_years_profit(df, clf, npast):
 
     # Generate shifted parameters
     nmax = npast-1         # the removed "1" shift is added in X_train and y_train
-    X = df[PATTERNS_OF_INTEREST]
+    columns = utl.get_dataframe_column_names(PATTERNS_OF_INTEREST)
+    X = df[columns]
     X = utl.get_shifted_columns(X, nmax).values
     y = df['Profit'].values
 
@@ -79,14 +64,19 @@ def predict_next_years_profit(df, clf, npast):
 
 if __name__ == '__main__':
 
-    # Get prediction for next year
+    # Load data
     files = Path(PATH_DATA_PROCESSED).glob("*.json")
     df = utl.load_data(files, PATTERNS_OF_INTEREST, normalized=True)
-    profit = predict_next_years_profit(df, CLF, _NPAST)
+
+    # Get prediction for next year
+    # clf = KNeighborsRegressor(random_state=SEED)
+    clf = DecisionTreeRegressor(random_state=SEED)
+    # clf = MLPRegressor(random_state=SEED, max_iter=10000, hidden_layer_sizes=(20, 20))
+    profit = predict_next_years_profit(df, clf, _NPAST)
 
     print('')
-    print(f'Beliefing the classifier "{CLF.__class__.__name__}"\n'
-          f'the profit will be {profit:.0f} SFr.')
+    print(f'Beliefing the classifier "{clf.__class__.__name__}"\n'
+          f'the profit will be {profit:.1f} MSFr.')
 
 
 

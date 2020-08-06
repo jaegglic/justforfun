@@ -38,8 +38,8 @@ def _print_pol_and_subj(pat, sentences, indent=4, dec=3):
 
     # Print statistics for the given pattern
     print(f'{" " * indent}{pat}')
-    pol = sum(mood['polarity']) / len(mood['polarity'])
-    subj = sum(mood['subjectivity']) / len(mood['subjectivity'])
+    pol = sum(mood['Polarity']) / len(mood['Polarity'])
+    subj = sum(mood['Subjectivity']) / len(mood['Subjectivity'])
     print(f'{" "*indent*2}Polarity     = {pol:{dec+2}.{dec}f}')
     print(f'{" "*indent*2}Subjectivity = {subj:{dec+2}.{dec}f}')
 

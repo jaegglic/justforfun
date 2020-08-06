@@ -27,6 +27,8 @@ import pandas as pd
 import numpy as np
 from sklearn import preprocessing
 # Local imports
+from src._settings import DF_COL_YEAR, DF_COL_PROFIT, DF_COL_COUNT, DF_COL_POL
+from src._settings import PROFIT_NORM
 
 
 def _german_stop_words():
@@ -87,6 +89,22 @@ def compute_pat_mood(pattern, sentences):
         ('Subjectivity', subjectivity)
     ])
     return mood
+
+
+def get_dataframe_column_names(patterns):
+    """Gets the column names for pattern in the dataframe.
+
+    Args:
+        patterns (list): List of patterns.
+
+    Returns:
+        list: Column names of dataframe.
+    """
+    columns = []
+    for ipat in range(len(patterns)):
+        columns.append(f'{DF_COL_COUNT}{ipat:02.0f}')
+        columns.append(f'{DF_COL_POL}{ipat:02.0f}')
+    return columns
 
 
 def get_sentences_from_pdf(path, filename):
@@ -155,7 +173,8 @@ def get_shifted_columns(df, nmax):
 def load_data(files, patterns, normalized=False):
     """Reads a set of .json files and generates a time series.
 
-    The output DataFrame has the columns:
+    The output DataFrame has the columns as defined in the `_settings.py` file
+    (DF_COL_*), for example:
         - 'Year':           Year of the data row
         - 'Profit':         Time series of profit
         - 'Count_00':       Time series of count for pattern 0
@@ -173,10 +192,8 @@ def load_data(files, patterns, normalized=False):
             DataFrame: Time series.
         """
     data = []
-    columns = ['Year', 'Profit']
-    for ipat in range(len(patterns)):
-        columns.append(f'Count_{ipat:02.0f}')
-        columns.append(f'Polarity_{ipat:02.0f}')
+    columns = [DF_COL_YEAR, DF_COL_PROFIT]
+    columns.extend(get_dataframe_column_names(patterns))
 
     for file in files:
         # Load content of data file
@@ -184,7 +201,9 @@ def load_data(files, patterns, normalized=False):
             content = json.load(jfile)
 
         # Read year and profit
-        new_row = [int(content['Metadata']['Year']), content['Data']['Profit']]
+        year = int(content['Metadata']['Year'])
+        profit = content['Data']['Profit'] / PROFIT_NORM
+        new_row = [year, profit]
 
         # Compute polarities for all patterns
         for pat in patterns:
