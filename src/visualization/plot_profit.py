@@ -26,7 +26,7 @@ from src._paths import PATH_DATA_PROCESSED
 from src._settings import PATTERNS_OF_INTEREST
 from src._settings import CLR_CHART_02, CLR_CHART_12
 import src.utils as utl
-from src.models.model_timeshifted_columns import predict_next_years_profit
+from src.models.model_profit import predict_next_years_profit
 
 
 # Constants

@@ -35,19 +35,40 @@ if __name__ == '__main__':
 
     # Load data sets
     files = Path(PATH_DATA_PROCESSED).glob("*.json")
-    df = utl.load_data(files, PATTERNS_OF_INTEREST, normalized=True)
+    df = utl.load_data(files, PATTERNS_OF_INTEREST, normalized=False)
 
     # Get year xticks
     xticklabel = [f'{y:4.0f}' for y in df['Year']]
     xticks = np.arange(len(xticklabel))
 
-    # Print figures
-    for col in PATTERNS_OF_INTEREST + ['Profit']:
+    # Print
+    for ipat, pat in enumerate(PATTERNS_OF_INTEREST):
+        # Plot Counts
+        col = f'Count_{ipat:02.0f}'
         _, ax = plt.subplots(1, 1, figsize=(7, 4))
         ax.plot(xticks, df[col], color=CLR_CHART_12, linewidth=_LINEWIDTH)
         ax.plot(xticks, df[col], color=CLR_CHART_12, marker='o', markersize=_MARKERSIZE)
         ax.set_xticks(xticks)
         ax.set_xticklabels(xticklabel)
-        ax.set_title(col)
+        ax.set_title(f'Count of {pat}')
+
+        # Plot Polarity
+        col = f'Polarity_{ipat:02.0f}'
+        _, ax = plt.subplots(1, 1, figsize=(7, 4))
+        ax.plot(xticks, df[col], color=CLR_CHART_12, linewidth=_LINEWIDTH)
+        ax.plot(xticks, df[col], color=CLR_CHART_12, marker='o', markersize=_MARKERSIZE)
+        ax.set_xticks(xticks)
+        ax.set_xticklabels(xticklabel)
+        ax.set_title(f'Polarity of {pat}')
+
+    # Plot Profit
+    col = 'Profit'
+    _, ax = plt.subplots(1, 1, figsize=(7, 4))
+    ax.plot(xticks, df[col], color=CLR_CHART_12, linewidth=_LINEWIDTH)
+    ax.plot(xticks, df[col], color=CLR_CHART_12, marker='o',
+            markersize=_MARKERSIZE)
+    ax.set_xticks(xticks)
+    ax.set_xticklabels(xticklabel)
+    ax.set_title(col)
 
     plt.show()

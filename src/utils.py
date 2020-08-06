@@ -158,10 +158,11 @@ def load_data(files, patterns, normalized=False):
     The output DataFrame has the columns:
         - 'Year':           Year of the data row
         - 'Profit':         Time series of profit
-        - pat_0:            Time series of pattern 0
-        - pat_1:            Time series of pattern 1
+        - 'Count_00':       Time series of count for pattern 0
+        - 'Polarity_00':    Time series of polarity for pattern 0
         - ...
-        - pat_n:            Time series of pattern n
+        - 'Count_n':        Time series of count for pattern n
+        - 'Polarity_n':     Time series of polarity for pattern n
 
         Args:
             files (iterator of Path objects): .json file names.
@@ -172,7 +173,10 @@ def load_data(files, patterns, normalized=False):
             DataFrame: Time series.
         """
     data = []
-    columns = ['Year', 'Profit'] + [p for p in patterns]
+    columns = ['Year', 'Profit']
+    for ipat in range(len(patterns)):
+        columns.append(f'Count_{ipat:02.0f}')
+        columns.append(f'Polarity_{ipat:02.0f}')
 
     for file in files:
         # Load content of data file
@@ -185,6 +189,8 @@ def load_data(files, patterns, normalized=False):
         # Compute polarities for all patterns
         for pat in patterns:
             mood = content['Data']['Mood'][pat]
+            new_row.append(len(mood['Sentences']))
+
             mean_polarity = sum(mood['Polarity']) / len(mood['Polarity'])
             new_row.append(mean_polarity)
 

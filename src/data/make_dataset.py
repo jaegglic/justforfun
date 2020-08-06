@@ -12,9 +12,10 @@ The data sets are json files of the form:
         "Profit":    int,
         "Equity":    int,
         "Mood": {
-          "pat_01":     dict (as in `utl.compute_pat_mood`)
-          "pat_02":     dict ( " )
+          "Pat_01":     dict (as in `utl.compute_pat_mood`),
+          "Pat_02":     dict ( " ),
           ....
+        }
       }
     }
 """
