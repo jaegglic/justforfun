@@ -4,9 +4,9 @@ Just For Fun
 
 Just a small project for playing around with packages such as:
 
-- ``PyPDF2`` (reading PDF files)
-- ``nltk``, ``spacy``, and ``textblob-de`` (NLP)
-- ``sklearn``, ``keras``, and/or ``tensorflow`` (ML)
+- ``PyMuPDF`` and ``PyPDF2`` (reading PDF files)
+- ``nltk``, ``spacy``, and ``textblob-de`` (Natural Language Processing)
+- ``sklearn`` (Machine Learning)
 
 and others.
 

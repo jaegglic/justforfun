@@ -8,4 +8,4 @@ matplotlib
 numpy
 pandas
 sklearn
-statsmodels
+PyMuPDF

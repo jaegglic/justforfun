@@ -12,11 +12,13 @@ PATTERNS_OF_INTEREST = [
 ]
 DF_COL_YEAR = 'Year'
 DF_COL_PROFIT = 'Profit'
+DF_COL_NWORDS = 'NWords'
 DF_COL_COUNT = 'Count_'
 DF_COL_POL = 'Polarity_'
 
 # Normalizing profit
-PROFIT_NORM = 1000000
+PROFIT_NORMALIZATION = int(1e6)
+PROFIT_UNIT = 'MSFr'
 
 # Color definitions
 CLR_BUSINESS_00 =       '#677078'    # Grey

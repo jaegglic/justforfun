@@ -5,7 +5,8 @@
 The data sets are json files of the form:
     {
       "Metadata": {
-        "filename": str
+        "Filename": str,
+        "Year":     int
       },
       "Data": {
         "Premium":   int,
@@ -16,6 +17,7 @@ The data sets are json files of the form:
           "Pat_02":     dict ( " ),
           ....
         }
+        "NWords":   int
       }
     }
 """
@@ -37,7 +39,7 @@ import json
 # Third party requirements
 # Local imports
 from src._paths import PATH_DATA_RAW, PATH_DATA_PROCESSED
-from src._settings import PATTERNS_OF_INTEREST
+from src._settings import PATTERNS_OF_INTEREST, DF_COL_NWORDS
 import src.utils as utl
 
 # Constants
@@ -67,6 +69,9 @@ if __name__ == '__main__':
         for pat in PATTERNS_OF_INTEREST:
             mood = utl.compute_pat_mood(pat, sentences)
             data['Data']['Mood'][str(pat)] = mood
+
+        # Add information about text length
+        data['Data'][DF_COL_NWORDS] = sum([len(s) for s in sentences])
 
         # Save data set
         file = Path(PATH_DATA_PROCESSED, filename).with_suffix('.json')

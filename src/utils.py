@@ -20,6 +20,7 @@ from pathlib import Path
 import json
 # Third party requirements
 import PyPDF2
+import fitz
 import nltk
 from textblob_de import TextBlobDE
 import spacy
@@ -27,40 +28,12 @@ import pandas as pd
 import numpy as np
 from sklearn import preprocessing
 # Local imports
-from src._settings import DF_COL_YEAR, DF_COL_PROFIT, DF_COL_COUNT, DF_COL_POL
-from src._settings import PROFIT_NORM
+from src._settings import DF_COL_YEAR, DF_COL_PROFIT, DF_COL_NWORDS,\
+    DF_COL_COUNT, DF_COL_POL
+from src._settings import PROFIT_NORMALIZATION
 
 
-def _german_stop_words():
-    """Returns a set of german stop words that are statistically not important
-    in the nlp.
-    """
-    stop_words = nltk.corpus.stopwords.words('german')
-
-    # keep_words = [
-    #     'kein', 'keine', 'keinem', 'keinen', 'keiner', 'keines',
-    #     'nicht',
-    #     'ohne',
-    # ]
-    keep_words = []
-
-    rem_words = [
-        'œ',
-        'ˆ',
-        'ab',
-        'ag',
-        'bzw',
-        'e',
-        'chf', 'mchf', 'tchf',
-        'mio',
-        'per',
-        'seit', 'sowie',
-    ]
-
-    stop_words += rem_words
-    return [sw for sw in stop_words if sw not in keep_words]
-
-
+# Public functions
 def compute_pat_mood(pattern, sentences):
     """Computes the polarity and the subjectivity of each sentence containing
     the given pattern.
@@ -171,16 +144,16 @@ def get_shifted_columns(df, nmax):
 
 
 def load_data(files, patterns, normalized=False):
-    """Reads a set of .json files and generates a time series.
+    """Reads a set of .json files and generates a dataframe.
 
     The output DataFrame has the columns as defined in the `_settings.py` file
     (DF_COL_*), for example:
         - 'Year':           Year of the data row
         - 'Profit':         Time series of profit
-        - 'Count_00':       Time series of count for pattern 0
+        - 'Count_00':    Time series of count for pattern 0
         - 'Polarity_00':    Time series of polarity for pattern 0
         - ...
-        - 'Count_n':        Time series of count for pattern n
+        - 'Count_n':     Time series of count for pattern n
         - 'Polarity_n':     Time series of polarity for pattern n
 
         Args:
@@ -202,13 +175,15 @@ def load_data(files, patterns, normalized=False):
 
         # Read year and profit
         year = int(content['Metadata']['Year'])
-        profit = content['Data']['Profit'] / PROFIT_NORM
+        profit = content['Data']['Profit'] / PROFIT_NORMALIZATION
+        # nwords = content['Data'][DF_COL_NWORDS]
         new_row = [year, profit]
 
         # Compute polarities for all patterns
         for pat in patterns:
             mood = content['Data']['Mood'][pat]
-            new_row.append(len(mood['Sentences']))
+            count = len(mood['Sentences'])
+            new_row.append(count)
 
             mean_polarity = sum(mood['Polarity']) / len(mood['Polarity'])
             new_row.append(mean_polarity)
@@ -265,7 +240,7 @@ def normalize_text(text, stemmer=None):
     return ' '.join(words)
 
 
-def read_pdf(path, filename):
+def read_pdf(path, filename, package=None):
     """Reads a pdf file.
 
     Notes
@@ -278,11 +253,57 @@ def read_pdf(path, filename):
     Args:
         path (Path): Path to the .pdf file.
         filename (str): File name.
+        package (str {'PyPDF2', 'fitz'}, optional): Package to use, default is
+            'fitz'
 
     Returns:
         dict: PDF text plus additional information.
     """
 
+    if package == 'PyPDF2':
+        _read = _read_pdf_pypdf2
+    elif package == 'fitz' or package is None:
+        _read = _read_pdf_fitz
+    else:
+        raise ValueError(f"Unknown PDF package '{package}'.")
+
+    doc = _read(path, filename)
+    return doc
+
+
+# Private functions
+def _german_stop_words():
+    """Returns a set of german stop words that are statistically not important
+    in the nlp.
+    """
+    stop_words = nltk.corpus.stopwords.words('german')
+
+    # keep_words = [
+    #     'kein', 'keine', 'keinem', 'keinen', 'keiner', 'keines',
+    #     'nicht',
+    #     'ohne',
+    # ]
+    keep_words = []
+
+    rem_words = [
+        'œ',
+        'ˆ',
+        'ab',
+        'ag',
+        'bzw',
+        'e',
+        'chf', 'mchf', 'tchf',
+        'mio',
+        'per',
+        'seit', 'sowie',
+    ]
+
+    stop_words += rem_words
+    return [sw for sw in stop_words if sw not in keep_words]
+
+
+def _read_pdf_pypdf2(path, filename):
+    """Reads the pdf by using the `PyPDF2` package."""
     file = Path(path, filename).with_suffix('.pdf')
     with open(file, 'rb') as pfile:
         # Generate pdf reader object
@@ -301,6 +322,29 @@ def read_pdf(path, filename):
             'type':         'PDF',
             'name':         str(file),
             'npages':       npages,
+            'page_sep':     r'<PageNum[0-9]{3}>'
+        },
+        'text':     text,
+    }
+
+    return dict(document)
+
+
+def _read_pdf_fitz(path, filename):
+    """Reads the pdf by using the `fitz` package."""
+    file = Path(path, filename).with_suffix('.pdf')
+    doc = fitz.open(file)
+
+    text = ''
+    for num, page in enumerate(doc):
+        text += f'<PageNum{num + 1:03}>{page.getText()}'
+
+    # Generate report object with metadata
+    document = {
+        'metadata': {
+            'type':         'PDF',
+            'name':         str(file),
+            'npages':       doc.pageCount,
             'page_sep':     r'<PageNum[0-9]{3}>'
         },
         'text':     text,
