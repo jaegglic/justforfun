@@ -271,6 +271,26 @@ def read_pdf(path, filename, package=None):
     return doc
 
 
+def save_fig(path, filename, plt_, format=None):
+    """Saves the figure.
+    
+    Args:
+        path (Path): Path to the .pdf file.
+        filename (str): File name.
+        plt_ (matplitlib.pyplot module): Plot object.
+        format (str, optional): The file format, e.g. 'png', 'pdf', 'svg'.
+
+    Returns:
+        None
+    """
+    if format is None:
+        format = 'svg'
+    suffix = f'.{format}'
+
+    file = Path(path, filename).with_suffix(suffix)
+    plt_.savefig(file, format=format)
+
+
 # Private functions
 def _german_stop_words():
     """Returns a set of german stop words that are statistically not important

@@ -22,18 +22,15 @@ import numpy as np
 from sklearn.linear_model import SGDRegressor
 from sklearn.ensemble import BaggingRegressor, RandomForestRegressor
 # Local imports
-from src._paths import PATH_DATA_PROCESSED
+from src._paths import PATH_DATA_PROCESSED, PATH_REP_FIG
 from src._settings import PATTERNS_OF_INTEREST, SEED, PROFIT_UNIT
-from src._settings import CLR_CHART_02, CLR_CHART_12
+from src._settings import CLR_CHART_02, CLR_CHART_12, FONTSIZE,\
+    MARKERSIZE, LINEWIDTH
 import src.utils as utl
 from src.visualization.print_clf_performance import predict_next_years_profit
 
-
 # Constants
 _NPAST = 3
-_LINEWIDTH = 4
-_MARKERSIZE = 12
-
 
 if __name__ == '__main__':
 
@@ -59,15 +56,21 @@ if __name__ == '__main__':
     # Plot figure
     rotation = 90
     profit_old = [p for p in df['Profit']]
+    plt.rcParams.update({'font.size': FONTSIZE})
     _, ax = plt.subplots(1, 1, figsize=(7, 4))
 
-    ax.plot(xticks[-2:], [profit_old[-1], profit_new], color=CLR_CHART_02, linewidth=_LINEWIDTH, linestyle='--')
-    ax.plot(xticks[-1], profit_new, color=CLR_CHART_02, marker='o', markersize=_MARKERSIZE)
+    ax.plot(xticks[-2:], [profit_old[-1], profit_new],
+            color=CLR_CHART_02, linewidth=LINEWIDTH)
+    ax.plot(xticks[-1], profit_new, color=CLR_CHART_02,
+            marker='o', markersize=MARKERSIZE, markeredgecolor='#ffffff')
 
-    ax.plot(xticks[:-1], profit_old, color=CLR_CHART_12, linewidth=_LINEWIDTH)
-    ax.plot(xticks[:-1], profit_old, color=CLR_CHART_12, marker='o', markersize=_MARKERSIZE)
+    ax.plot(xticks[:-1], profit_old, color=CLR_CHART_12, linewidth=LINEWIDTH)
+    ax.plot(xticks[:-1], profit_old, color=CLR_CHART_12,
+            marker='o', markersize=MARKERSIZE, markeredgecolor='#ffffff')
 
     ax.set_xticks(xticks)
     ax.set_xticklabels(xticklabel, rotation=90)
 
+    plt.tight_layout()
+    utl.save_fig(PATH_REP_FIG, 'Prediction', plt)
     plt.show()

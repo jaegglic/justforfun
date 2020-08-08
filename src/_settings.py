@@ -44,3 +44,8 @@ CLR_CHART_09 =          '#4b1f6f'    # Magenta
 CLR_CHART_10 =          '#ff950e'    # Orange
 CLR_CHART_11 =          '#c5000b'    # Red
 CLR_CHART_12 =          '#0084d1'    # Blue
+
+# Figure settings
+LINEWIDTH = 4
+MARKERSIZE = 12
+FONTSIZE = 18
