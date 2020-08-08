@@ -1,26 +1,38 @@
 File MainCompany_2019
 
     mitarbeite(n|nd|r|rin|rinnen)
-        Polarity     = 0.253
-        Subjectivity = 0.005
+        Count/Word   = 0.013106
+        Place        = 7
+        Polarity     = 0.316
+        Subjectivity = 0.000
     kunde[n]?
-        Polarity     = 0.264
-        Subjectivity = 0.024
+        Count        = 0.022783
+        Place        = 2
+        Polarity     = 0.231
+        Subjectivity = 0.007
 
 File SideCompany_A_2019
 
     mitarbeite(n|nd|r|rin|rinnen)
-        Polarity     = 0.192
+        Count/Word   = 0.022586
+        Place        = 16
+        Polarity     = 0.201
         Subjectivity = 0.007
     kunde[n]?
-        Polarity     = 0.264
-        Subjectivity = 0.055
+        Count/Word   = 0.019075
+        Place        = 19
+        Polarity     = 0.241
+        Subjectivity = 0.057
 		
 File SideCompany_B_2019
 
     mitarbeite(n|nd|r|rin|rinnen)
-        Polarity     = 0.180
+        Count	     = 0.010617 
+        Place        = 5
+        Polarity     = 0.217
         Subjectivity = 0.022
     kunde[n]?
-        Polarity     = 0.264
-        Subjectivity = 0.018
+        Count	     = 0.011433
+        Place        = 6
+        Polarity     = 0.302
+        Subjectivity = 0.020

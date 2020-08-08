@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Plots the prediction of next years profit.
+"""Generates and plots the prediction of next years profit.
 """
 
 # -------------------------------------------------------------------------

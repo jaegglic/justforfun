@@ -25,16 +25,16 @@ import src.utils as utl
 
 # Constants
 _FILENAMES = [
-    'MainCompany_2000',
-    'MainCompany_2001',
-    'MainCompany_2002',
-    'MainCompany_2003',
-    'MainCompany_2004',
-    'MainCompany_2005',
-    'MainCompany_2006',
-    'MainCompany_2007',
-    'MainCompany_2008',
-    'MainCompany_2009',
+    # 'MainCompany_2000',
+    # 'MainCompany_2001',
+    # 'MainCompany_2002',
+    # 'MainCompany_2003',
+    # 'MainCompany_2004',
+    # 'MainCompany_2005',
+    # 'MainCompany_2006',
+    # 'MainCompany_2007',
+    # 'MainCompany_2008',
+    # 'MainCompany_2009',
     # 'MainCompany_2010',
     # 'MainCompany_2011',
     # 'MainCompany_2012',
@@ -44,7 +44,7 @@ _FILENAMES = [
     # 'MainCompany_2016',
     # 'MainCompany_2017',
     # 'MainCompany_2018',
-    # 'MainCompany_2019',
+    'MainCompany_2019',
 
     # 'SideCompany_A_2019',
 
@@ -125,7 +125,7 @@ if __name__ == '__main__':
     stemmer = 'spacy'        # None, 'nltk', 'spacy', or 'personal'
 
     # How many of the most appearing words to show
-    nmost = 20
+    nmost = 50
 
     # Generate and print the pdf statistics
     for filename in _FILENAMES:

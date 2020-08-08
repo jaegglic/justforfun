@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Plots the polarity and the subjectivity.
+"""Plots the yearly evolution of the polarity and the count of each pattern
+as well as the evolution of the profit.
 """
 
 # -------------------------------------------------------------------------
